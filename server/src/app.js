@@ -25,30 +25,6 @@ app.get("/", (req, res) => {
         success: true,
         service: "RTI Citizen Online Platform Backend API",
         status: "online",
-        endpoints: {
-            health: "GET /api/health",
-            auth: {
-                login: "POST /api/auth/login",
-                register: "POST /api/auth/register",
-                me: "GET /api/auth/me (Bearer Token required)",
-            },
-            applications: {
-                create: "POST /api/applications",
-                list: "GET /api/applications",
-                track: "GET /api/applications/:regNumber",
-                stats: "GET /api/applications/stats/summary",
-            },
-            appeals: {
-                create: "POST /api/appeals",
-                list: "GET /api/appeals",
-                track: "GET /api/appeals/:appealNumber",
-                parent: "GET /api/appeals/parent/:regNumber",
-            },
-            authorities: {
-                list: "GET /api/authorities",
-                getById: "GET /api/authorities/:id",
-            },
-        },
     });
 });
 
