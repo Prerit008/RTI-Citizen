@@ -19,7 +19,35 @@ import {
     dashboardStats,
 } from "../data/mockDashboard";
 
+import { useAuth } from "../context/AuthContext";
+
 export default function Dashboard() {
+    const { user } = useAuth();
+    const userName = user ? user.name : "Citizen";
+
+    // Load user submitted applications
+    const userSubmitted = (() => {
+        try {
+            const raw = localStorage.getItem("submitted_rtis");
+            if (!raw) return [];
+            return Object.values(JSON.parse(raw)).map((item) => ({
+                id: item.registrationNumber,
+                registrationNumber: item.registrationNumber,
+                authority: item.authorityName,
+                submittedDate: item.filedDate,
+                status: item.status || "In progress",
+                statusType: "info",
+                summary: item.requestText,
+            }));
+        } catch {
+            return [];
+        }
+    })();
+
+    const allApps = [...userSubmitted, ...dashboardApplications];
+    const totalCount = dashboardStats.total + userSubmitted.length;
+    const activeCount = dashboardStats.active + userSubmitted.length;
+
     return (
         <div className="min-h-screen bg-slate-50">
 
@@ -37,7 +65,7 @@ export default function Dashboard() {
                             </p>
 
                             <h1 className="mt-1 text-2xl font-bold tracking-tight text-navy-900 sm:text-3xl">
-                                Good morning, Prerit
+                                Welcome back, {userName}
                             </h1>
 
                             <p className="mt-2 text-sm text-slate-500">
@@ -68,13 +96,13 @@ export default function Dashboard() {
                     <StatCard
                         icon={FileText}
                         label="Total applications"
-                        value={dashboardStats.total}
+                        value={totalCount}
                     />
 
                     <StatCard
                         icon={Clock3}
                         label="Active applications"
-                        value={dashboardStats.active}
+                        value={activeCount}
                     />
 
                     <StatCard
@@ -157,7 +185,7 @@ export default function Dashboard() {
 
                     <div className="space-y-4">
 
-                        {dashboardApplications.map((application) => (
+                        {allApps.map((application) => (
                             <RTIApplicationCard
                                 key={application.id}
                                 application={application}

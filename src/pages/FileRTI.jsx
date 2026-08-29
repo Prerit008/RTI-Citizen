@@ -21,12 +21,14 @@ export default function FileRTI() {
         updateSection,
     } = useRTIApplication();
 
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
 
-    const authorityId = searchParams.get("authority");
+    const [selectedId, setSelectedId] = useState(
+        () => searchParams.get("authority") || application.authority?.id || ""
+    );
 
     const selectedAuthority = authorities.find(
-        (authority) => authority.id === authorityId
+        (authority) => authority.id === selectedId
     );
 
     const [search, setSearch] = useState("");
@@ -46,11 +48,13 @@ export default function FileRTI() {
     }, [search]);
 
     const selectAuthority = (authority) => {
+        setSelectedId(authority.id);
         updateSection("authority", {
             id: authority.id,
             name: authority.name,
-            ministry: authority.ministry,
+            ministry: authority.ministry || authority.name,
         });
+        setSearchParams({ authority: authority.id });
     };
 
     const continueToApplicant = () => {

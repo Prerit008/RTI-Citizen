@@ -29,6 +29,19 @@ export default function TrackApplication() {
 
     const [error, setError] = useState("");
 
+    const getApplicationByReg = (regNum) => {
+        const key = regNum.trim().toUpperCase();
+        if (mockApplications[key]) return mockApplications[key];
+
+        try {
+            const saved = JSON.parse(localStorage.getItem("submitted_rtis") || "{}");
+            if (saved[key]) return saved[key];
+        } catch (e) {
+            console.error(e);
+        }
+        return null;
+    };
+
     const handleTrack = (event) => {
         event.preventDefault();
 
@@ -40,7 +53,7 @@ export default function TrackApplication() {
             return;
         }
 
-        const result = mockApplications[value];
+        const result = getApplicationByReg(value);
 
         if (!result) {
             setError(
@@ -64,8 +77,7 @@ export default function TrackApplication() {
         if (registrationFromUrl) {
             setRegistrationNumber(registrationFromUrl);
 
-            const result =
-                mockApplications[registrationFromUrl];
+            const result = getApplicationByReg(registrationFromUrl);
 
             if (result) {
                 setApplication(result);

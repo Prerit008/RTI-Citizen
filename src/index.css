@@ -42,3 +42,53 @@ select:focus-visible {
     outline: 3px solid rgba(180, 35, 24, 0.35);
     outline-offset: 2px;
 }
+
+/* Accessibility classes */
+html.grayscale-mode {
+    filter: grayscale(100%) !important;
+}
+
+html.readable-font, html.readable-font * {
+    font-family: 'Verdana', 'Segoe UI', sans-serif !important;
+    letter-spacing: 0.03em !important;
+}
+
+html.underline-links a {
+    text-decoration: underline !important;
+    text-underline-offset: 3px !important;
+}
+
+html.high-contrast {
+    background-color: #0d0d0d !important;
+    color: #ffffff !important;
+}
+
+html.high-contrast body {
+    background-color: #0d0d0d !important;
+    color: #ffffff !important;
+}
+
+html.high-contrast header,
+html.high-contrast nav,
+html.high-contrast footer,
+html.high-contrast div,
+html.high-contrast section,
+html.high-contrast article,
+html.high-contrast main {
+    background-color: #121212 !important;
+    color: #ffffff !important;
+    border-color: #333333 !important;
+}
+
+html.high-contrast button,
+html.high-contrast a {
+    color: #ffff00 !important;
+}
+
+html.high-contrast input,
+html.high-contrast textarea,
+html.high-contrast select {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+}

@@ -10,6 +10,7 @@ import Learn from "../pages/Learn";
 import FAQ from "../pages/FAQ";
 import Help from "../pages/Help";
 import Login from "../pages/Login";
+import Register from "../pages/Register";
 import Dashboard from "../pages/Dashboard";
 import RTIApplicant from "../pages/RTIApplicant";
 import RTIRequest from "../pages/RTIRequest";
@@ -107,6 +108,11 @@ export default function AppRoutes() {
             <Route
                 path="/login"
                 element={<Login />}
+            />
+
+            <Route
+                path="/register"
+                element={<Register />}
             />
 
             <Route

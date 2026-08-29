@@ -1,11 +1,24 @@
+import { useEffect } from "react";
 import { ArrowLeft, ArrowRight, Info } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 import RTIWizardLayout from "../components/rti/RTIWizardLayout";
 import { useRTIApplication } from "../context/RTIApplicationContext";
+import { useAuth } from "../context/AuthContext";
+
+const STATES_LIST = [
+    "Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh",
+    "Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka",
+    "Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram",
+    "Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana",
+    "Tripura","Uttar Pradesh","Uttarakhand","West Bengal",
+    "Andaman and Nicobar Islands","Chandigarh","Dadra and Nagar Haveli and Daman and Diu",
+    "Delhi","Jammu and Kashmir","Ladakh","Lakshadweep","Puducherry"
+];
 
 export default function RTIApplicant() {
     const navigate = useNavigate();
+    const { user } = useAuth();
 
     const {
         application,
@@ -13,6 +26,21 @@ export default function RTIApplicant() {
     } = useRTIApplication();
 
     const applicant = application.applicant;
+
+    // Auto-fill from logged in citizen profile if blank
+    useEffect(() => {
+        if (user) {
+            updateSection("applicant", {
+                name: applicant.name || user.name || "",
+                email: applicant.email || user.email || "",
+                mobile: applicant.mobile || user.mobile || "",
+                address: applicant.address || user.address || "",
+                state: applicant.state || user.state || "",
+                pincode: applicant.pincode || user.pincode || "",
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]);
 
     const update = (field, value) => {
         updateSection("applicant", {
@@ -158,15 +186,9 @@ export default function RTIApplicant() {
                             <option value="">
                                 Select state / UT
                             </option>
-                            <option>Uttar Pradesh</option>
-                            <option>Delhi</option>
-                            <option>Maharashtra</option>
-                            <option>Karnataka</option>
-                            <option>Tamil Nadu</option>
-                            <option>West Bengal</option>
-                            <option>Gujarat</option>
-                            <option>Rajasthan</option>
-                            <option>Other</option>
+                            {STATES_LIST.map((st) => (
+                                <option key={st} value={st}>{st}</option>
+                            ))}
                         </select>
 
                     </div>
