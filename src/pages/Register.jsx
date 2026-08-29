@@ -9,6 +9,7 @@ import {
     User,
     AlertCircle,
     CheckCircle,
+    CheckCircle2,
     UserPlus,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
@@ -90,6 +91,7 @@ export default function Register() {
     const [showPass, setShowPass] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
     const [globalError, setGlobalError] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
     const [loading, setLoading] = useState(false);
     const [captchaOk, setCaptchaOk] = useState(false);
 
@@ -100,41 +102,52 @@ export default function Register() {
         password: "",
         confirm: "",
     });
-
     const [errors, setErrors] = useState({});
 
     const handle = (e) => {
-        const { name, value } = e.target;
-        setForm((f) => ({ ...f, [name]: value }));
-        setErrors((er) => ({ ...er, [name]: "" }));
+        setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+        setErrors((errs) => ({ ...errs, [e.target.name]: "" }));
+        setGlobalError("");
     };
 
     const onVerifyCaptcha = useCallback((ok) => {
         setCaptchaOk(ok);
-        setErrors((er) => ({ ...er, captcha: "" }));
+        if (ok) {
+            setErrors((errs) => ({ ...errs, captcha: "" }));
+        }
     }, []);
 
-    // ── Validate per step ────────────────────────────────────────
+    // ── Validation ───────────────────────────────────────────────
     const validateStep = (s) => {
         const e = {};
         if (s === 1) {
             if (!form.name.trim()) e.name = "Full name is required.";
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+            else if (form.name.trim().length < 3)
+                e.name = "Name must be at least 3 characters.";
+
+            if (!form.email.trim()) e.email = "Email is required.";
+            else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()))
                 e.email = "Enter a valid email address.";
-            if (!/^\d{10}$/.test(form.mobile))
+
+            if (!form.mobile.trim()) e.mobile = "Mobile number is required.";
+            else if (!/^\d{10}$/.test(form.mobile.trim()))
                 e.mobile = "Enter a valid 10-digit mobile number.";
         }
         if (s === 2) {
-            const passOk =
-                form.password.length >= 8 &&
-                /[A-Z]/.test(form.password) &&
-                /\d/.test(form.password) &&
-                /[^A-Za-z0-9]/.test(form.password);
-            if (!passOk)
-                e.password =
-                    "Password must be 8+ chars with uppercase, number & special character.";
-            if (form.password !== form.confirm)
+            if (!form.password) e.password = "Password is required.";
+            else if (form.password.length < 8)
+                e.password = "Password must be at least 8 characters.";
+            else if (!/[A-Z]/.test(form.password))
+                e.password = "Must contain at least one uppercase letter.";
+            else if (!/\d/.test(form.password))
+                e.password = "Must contain at least one number.";
+            else if (!/[^A-Za-z0-9]/.test(form.password))
+                e.password = "Must contain at least one special character.";
+
+            if (!form.confirm) e.confirm = "Please confirm your password.";
+            else if (form.password !== form.confirm)
                 e.confirm = "Passwords do not match.";
+
             if (!captchaOk)
                 e.captcha = "Please solve the security question correctly.";
         }
@@ -145,26 +158,40 @@ export default function Register() {
         const e = validateStep(step);
         if (Object.keys(e).length) { setErrors(e); return; }
         setStep((s) => s + 1);
+        setGlobalError("");
     };
 
-    const back = () => setStep((s) => s - 1);
+    const back = () => {
+        setStep((s) => s - 1);
+        setGlobalError("");
+    };
 
     const submit = async (e) => {
         e.preventDefault();
+        setGlobalError("");
+        setSuccessMessage("");
+
         const e2 = validateStep(2);
         if (Object.keys(e2).length) { setErrors(e2); return; }
 
         setLoading(true);
-        await new Promise((r) => setTimeout(r, 700));
 
-        const { confirm: _c, ...data } = form;
-        const result = register(data);
-        setLoading(false);
+        try {
+            const { confirm: _c, ...data } = form;
+            const result = await register(data);
 
-        if (!result.success) {
-            setGlobalError(result.message);
-        } else {
-            navigate("/dashboard");
+            if (!result || !result.success) {
+                setGlobalError(result?.message || "An account with this email already exists or registration failed.");
+                setLoading(false);
+            } else {
+                setSuccessMessage("Account created successfully! Redirecting to dashboard...");
+                setTimeout(() => {
+                    navigate("/dashboard");
+                }, 700);
+            }
+        } catch (err) {
+            setGlobalError(err.message || "Failed to connect to registration server. Please try again.");
+            setLoading(false);
         }
     };
 
@@ -174,10 +201,8 @@ export default function Register() {
     return (
         <div className="flex min-h-[calc(100vh-180px)] items-center justify-center px-4 py-12">
             <div className="w-full max-w-lg">
-
                 {/* Card */}
                 <div className="rounded-2xl border border-slate-200 bg-white px-8 py-10 shadow-card">
-
                     {/* Header */}
                     <div className="mb-6 text-center">
                         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-rti-50">
@@ -219,16 +244,23 @@ export default function Register() {
                         })}
                     </div>
 
+                    {/* Success Alert */}
+                    {successMessage && (
+                        <div className="mb-4 flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800 animate-fadeIn">
+                            <CheckCircle2 size={18} className="shrink-0 text-green-600" />
+                            <span>{successMessage}</span>
+                        </div>
+                    )}
+
                     {/* Global error */}
                     {globalError && (
-                        <div className="mb-4 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                            <AlertCircle size={16} className="shrink-0" />
-                            {globalError}
+                        <div className="mb-4 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 animate-fadeIn">
+                            <AlertCircle size={18} className="shrink-0 text-red-600" />
+                            <span>{globalError}</span>
                         </div>
                     )}
 
                     <form onSubmit={submit} noValidate>
-
                         {/* ── Step 1: Personal Info ── */}
                         {step === 1 && (
                             <div className="space-y-5">
@@ -358,7 +390,7 @@ export default function Register() {
                                 <button
                                     type="button"
                                     onClick={next}
-                                    className="flex-1 rounded-xl bg-rti-600 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-rti-700"
+                                    className="flex-1 rounded-xl bg-rti-600 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-rti-700"
                                 >
                                     Continue →
                                 </button>
@@ -366,12 +398,12 @@ export default function Register() {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-rti-600 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-rti-700 disabled:cursor-not-allowed disabled:opacity-60"
+                                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-rti-600 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-rti-700 disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                     {loading ? (
                                         <>
                                             <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                                            Creating account…
+                                            Creating citizen account…
                                         </>
                                     ) : (
                                         "Create Account"

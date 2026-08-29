@@ -1,11 +1,12 @@
 import { useState, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
     Eye,
     EyeOff,
     Lock,
     Mail,
     AlertCircle,
+    CheckCircle2,
     Info,
     LogIn,
 } from "lucide-react";
@@ -22,6 +23,7 @@ function MockCredentialsHint({ onFill }) {
     return (
         <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
             <button
+                type="button"
                 onClick={() => setOpen((p) => !p)}
                 className="flex w-full items-center gap-2 text-left text-sm font-medium text-blue-700"
             >
@@ -43,7 +45,7 @@ function MockCredentialsHint({ onFill }) {
                                 <button
                                     type="button"
                                     onClick={() => onFill(c.email, c.pass)}
-                                    className="rounded-md bg-blue-600 px-2 py-0.5 text-xs font-medium text-white hover:bg-blue-700"
+                                    className="rounded-md bg-blue-600 px-2 py-0.5 text-xs font-medium text-white hover:bg-blue-700 transition"
                                 >
                                     Use this →
                                 </button>
@@ -74,10 +76,12 @@ function MockCredentialsHint({ onFill }) {
 export default function Login() {
     const { login } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [form, setForm] = useState({ email: "", password: "" });
     const [showPass, setShowPass] = useState(false);
     const [error, setError] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
     const [fieldErrors, setFieldErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [captchaOk, setCaptchaOk] = useState(false);
@@ -85,16 +89,27 @@ export default function Login() {
     const handle = (e) => {
         setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
         setFieldErrors((fe) => ({ ...fe, [e.target.name]: "" }));
+        setError("");
     };
 
     // Called by hint panel "Use this →" button
-    const fillCreds = (email, pass) => setForm({ email, password: pass });
+    const fillCreds = (email, pass) => {
+        setForm({ email, password: pass });
+        setError("");
+        setFieldErrors({});
+    };
 
-    const onVerifyCaptcha = useCallback((ok) => setCaptchaOk(ok), []);
+    const onVerifyCaptcha = useCallback((ok) => {
+        setCaptchaOk(ok);
+        if (ok) {
+            setFieldErrors((fe) => ({ ...fe, captcha: "" }));
+        }
+    }, []);
 
     const submit = async (e) => {
         e.preventDefault();
         setError("");
+        setSuccessMessage("");
 
         const email = form.email.trim();
         const password = form.password.trim();
@@ -110,24 +125,31 @@ export default function Login() {
         }
 
         setLoading(true);
-        await new Promise((r) => setTimeout(r, 600));
-        const result = login(email, password);
-        setLoading(false);
 
-        if (!result.success) {
-            setError(result.message);
-        } else {
-            navigate("/dashboard");
+        try {
+            const result = await login(email, password);
+
+            if (!result || !result.success) {
+                setError(result?.message || "Invalid email or password. Please verify your credentials.");
+                setLoading(false);
+            } else {
+                setSuccessMessage("Login successful! Redirecting to dashboard...");
+                setTimeout(() => {
+                    const destination = location.state?.from || "/dashboard";
+                    navigate(destination);
+                }, 700);
+            }
+        } catch (err) {
+            setError(err.message || "Unable to reach authentication server. Please try again.");
+            setLoading(false);
         }
     };
 
     return (
         <div className="flex min-h-[calc(100vh-180px)] items-center justify-center px-4 py-12">
             <div className="w-full max-w-md">
-
                 {/* Card */}
                 <div className="rounded-2xl border border-slate-200 bg-white px-8 py-10 shadow-card">
-
                     {/* Header */}
                     <div className="mb-8 text-center">
                         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-rti-50">
@@ -144,17 +166,24 @@ export default function Login() {
                     {/* Demo hint */}
                     <MockCredentialsHint onFill={fillCreds} />
 
-                    {/* Global error */}
+                    {/* Success Alert */}
+                    {successMessage && (
+                        <div className="mt-4 flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800 animate-fadeIn">
+                            <CheckCircle2 size={18} className="shrink-0 text-green-600" />
+                            <span>{successMessage}</span>
+                        </div>
+                    )}
+
+                    {/* Failure Alert */}
                     {error && (
-                        <div className="mt-4 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                            <AlertCircle size={16} className="shrink-0" />
-                            {error}
+                        <div className="mt-4 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 animate-fadeIn">
+                            <AlertCircle size={18} className="shrink-0 text-red-600" />
+                            <span>{error}</span>
                         </div>
                     )}
 
                     {/* Form */}
                     <form onSubmit={submit} noValidate className="mt-6 space-y-5">
-
                         {/* Email */}
                         <div>
                             <label
@@ -176,7 +205,11 @@ export default function Login() {
                                     value={form.email}
                                     onChange={handle}
                                     placeholder="you@example.com"
-                                    className={`w-full rounded-xl border bg-slate-50 py-3 pl-10 pr-4 text-sm text-navy-900 placeholder-slate-400 transition focus:bg-white focus:outline-none focus:ring-2 ${fieldErrors.email ? "border-red-300 focus:border-red-400 focus:ring-red-200" : "border-slate-200 focus:border-rti-500 focus:ring-rti-500/20"}`}
+                                    className={`w-full rounded-xl border bg-slate-50 py-3 pl-10 pr-4 text-sm text-navy-900 placeholder-slate-400 transition focus:bg-white focus:outline-none focus:ring-2 ${
+                                        fieldErrors.email
+                                            ? "border-red-300 focus:border-red-400 focus:ring-red-200"
+                                            : "border-slate-200 focus:border-rti-500 focus:ring-rti-500/20"
+                                    }`}
                                 />
                             </div>
                             {fieldErrors.email && (
@@ -200,7 +233,7 @@ export default function Login() {
                                     className="text-xs font-medium text-rti-600 hover:underline"
                                     onClick={() =>
                                         alert(
-                                            "Password reset via OTP is not available in this demo."
+                                            "For demo accounts, you can use the credentials listed above. In production, password reset OTP will be sent to your registered mobile."
                                         )
                                     }
                                 >
@@ -220,7 +253,11 @@ export default function Login() {
                                     value={form.password}
                                     onChange={handle}
                                     placeholder="Enter your password"
-                                    className={`w-full rounded-xl border bg-slate-50 py-3 pl-10 pr-11 text-sm text-navy-900 placeholder-slate-400 transition focus:bg-white focus:outline-none focus:ring-2 ${fieldErrors.password ? "border-red-300 focus:border-red-400 focus:ring-red-200" : "border-slate-200 focus:border-rti-500 focus:ring-rti-500/20"}`}
+                                    className={`w-full rounded-xl border bg-slate-50 py-3 pl-10 pr-11 text-sm text-navy-900 placeholder-slate-400 transition focus:bg-white focus:outline-none focus:ring-2 ${
+                                        fieldErrors.password
+                                            ? "border-red-300 focus:border-red-400 focus:ring-red-200"
+                                            : "border-slate-200 focus:border-rti-500 focus:ring-rti-500/20"
+                                    }`}
                                 />
                                 <button
                                     type="button"
@@ -248,15 +285,15 @@ export default function Login() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex w-full items-center justify-center gap-2 rounded-xl bg-rti-600 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-rti-700 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="flex w-full items-center justify-center gap-2 rounded-xl bg-rti-600 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-rti-700 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             {loading ? (
                                 <>
                                     <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                                    Signing in…
+                                    Authenticating…
                                 </>
                             ) : (
-                                "Sign In"
+                                "Sign In to Dashboard"
                             )}
                         </button>
                     </form>
@@ -275,7 +312,7 @@ export default function Login() {
                             to="/register"
                             className="font-semibold text-rti-600 hover:underline"
                         >
-                            Create an account
+                            Create a Citizen account
                         </Link>
                     </p>
                 </div>

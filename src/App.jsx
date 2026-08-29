@@ -10,32 +10,41 @@ import AppRoutes from "./routes/AppRoutes";
 import { RTIApplicationProvider } from "./context/RTIApplicationContext";
 import { AuthProvider } from "./context/AuthContext";
 import { AccessibilityProvider } from "./context/AccessibilityContext";
+import { SearchProvider } from "./context/SearchContext";
+import { LanguageProvider } from "./context/LanguageContext";
+import LanguageSelectorModal from "./components/common/LanguageSelectorModal";
 
 function App() {
   return (
     <BrowserRouter>
       <AccessibilityProvider>
-        <AuthProvider>
-          <RTIApplicationProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <RTIApplicationProvider>
+              <SearchProvider>
 
-            <div className="min-h-screen bg-slate-50">
+                <div className="min-h-screen bg-slate-50">
 
-              <Header />
+                  <Header />
 
-              <Navbar />
+                  <Navbar />
 
-              <main id="main-content">
-                <AppRoutes />
-              </main>
+                  <main id="main-content">
+                    <AppRoutes />
+                  </main>
 
-              <Footer />
+                  <Footer />
 
-              <AccessibilityModal />
+                  <AccessibilityModal />
 
-            </div>
+                  <LanguageSelectorModal />
 
-          </RTIApplicationProvider>
-        </AuthProvider>
+                </div>
+
+              </SearchProvider>
+            </RTIApplicationProvider>
+          </AuthProvider>
+        </LanguageProvider>
       </AccessibilityProvider>
     </BrowserRouter>
   );

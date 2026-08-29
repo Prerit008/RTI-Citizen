@@ -1,63 +1,67 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import {
     Check,
     Copy,
-    Download,
     ExternalLink,
     Home,
     Search,
+    Download,
     Printer,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useRTIApplication } from "../context/RTIApplicationContext";
+import { downloadAcknowledgmentPDF } from "../utils/pdfGenerator";
 
 export default function RTISuccess() {
+    const location = useLocation();
     const { application, resetApplication } = useRTIApplication();
     const [copied, setCopied] = useState(false);
 
-    const registrationNumber = useMemo(() => {
-        const random = Math.floor(100000 + Math.random() * 900000);
-        return `RTI/2026/${random}`;
-    }, []);
+    // Get registration number and authority from navigation state or context
+    const stateApp = location.state?.application;
+    const registrationNumber =
+        location.state?.registrationNumber ||
+        stateApp?.registrationNumber ||
+        "RTI/2026/123456";
 
-    // Save submitted RTI to local storage so tracking & dashboard find it
-    useEffect(() => {
-        if (application.authority?.name) {
-            const today = new Date().toISOString().split("T")[0];
-            const record = {
-                registrationNumber,
-                authorityName: application.authority.name,
-                authorityId: application.authority.id,
-                filedDate: today,
-                status: "Received",
-                applicantName: application.applicant.name || "Citizen Applicant",
-                applicantEmail: application.applicant.email || "",
-                applicantMobile: application.applicant.mobile || "",
-                requestText: application.request.text || "RTI Information Request",
-                language: application.request.language || "English",
-                amountPaid: application.request.isBPL ? "Exempted (BPL)" : "₹10",
-                timeline: [
-                    { title: "Application Submitted", date: today, status: "completed" },
-                    { title: "Transferred to PIO", date: today, status: "current" },
-                    { title: "Information Gathering", date: "Pending", status: "upcoming" },
-                    { title: "Final Response Sent", date: "Pending", status: "upcoming" },
-                ],
-            };
+    const authorityName =
+        stateApp?.authorityName ||
+        application.authority?.name ||
+        "Concerned Public Authority";
 
-            try {
-                const existing = JSON.parse(localStorage.getItem("submitted_rtis") || "{}");
-                existing[registrationNumber] = record;
-                localStorage.setItem("submitted_rtis", JSON.stringify(existing));
-            } catch (e) {
-                console.error("Failed to save RTI record", e);
-            }
-        }
-    }, [registrationNumber, application]);
+    const applicantEmail =
+        stateApp?.applicantEmail ||
+        application.applicant?.email ||
+        "your registered email";
 
     const copyNumber = async () => {
         await navigator.clipboard.writeText(registrationNumber);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
+    };
+
+    const handleDownloadPDF = () => {
+        const payload = stateApp || {
+            registrationNumber,
+            authorityName,
+            applicantName: application.applicant?.name || "Citizen Applicant",
+            applicantEmail,
+            applicantMobile: application.applicant?.mobile || "",
+            applicantAddress: [
+                application.applicant?.address,
+                application.applicant?.city,
+                application.applicant?.state,
+                application.applicant?.pincode,
+            ].filter(Boolean).join(", "),
+            requestText: application.request?.text || "Right to Information Request",
+            submittedOn: new Date().toLocaleDateString("en-IN", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+            }),
+            isBPL: application.request?.isBPL,
+        };
+        downloadAcknowledgmentPDF(payload);
     };
 
     const handlePrint = () => {
@@ -67,7 +71,6 @@ export default function RTISuccess() {
     return (
         <div className="min-h-[calc(100vh-180px)] bg-slate-50">
             <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8 lg:py-20">
-
                 {/* Success Banner */}
                 <div className="text-center">
                     <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-green-600">
@@ -85,9 +88,9 @@ export default function RTISuccess() {
                     </h1>
 
                     <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-slate-500">
-                        Your application has been submitted to{" "}
-                        <strong className="text-navy-900">{application.authority?.name || "the Public Authority"}</strong>.
-                        Keep your registration number safe to track your request.
+                        Your application has been logged and routed to{" "}
+                        <strong className="text-navy-900">{authorityName}</strong>.
+                        Keep your registration number safe to track your request in real-time.
                     </p>
                 </div>
 
@@ -106,7 +109,7 @@ export default function RTISuccess() {
                             type="button"
                             onClick={copyNumber}
                             title="Copy registration number"
-                            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-navy-900"
+                            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-navy-900 transition"
                         >
                             {copied ? <Check size={17} className="text-green-600" /> : <Copy size={17} />}
                         </button>
@@ -119,28 +122,37 @@ export default function RTISuccess() {
                     )}
 
                     <p className="mt-4 text-sm text-slate-500">
-                        A confirmation SMS and email have been dispatched to{" "}
-                        <span className="font-medium text-navy-900">{application.applicant?.email || "your email"}</span>.
+                        An official confirmation acknowledgement has been recorded for{" "}
+                        <span className="font-medium text-navy-900">{applicantEmail}</span>.
                     </p>
                 </div>
 
                 {/* Actions */}
-                <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                    <button
+                        type="button"
+                        onClick={handleDownloadPDF}
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-navy-900 px-4 py-3.5 text-sm font-semibold text-white shadow hover:bg-navy-800 transition sm:col-span-1"
+                    >
+                        <Download size={17} />
+                        Download PDF
+                    </button>
+
                     <button
                         type="button"
                         onClick={handlePrint}
-                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-3.5 text-sm font-semibold text-navy-900 hover:bg-slate-50 transition"
+                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3.5 text-sm font-semibold text-navy-900 hover:bg-slate-50 transition sm:col-span-1"
                     >
                         <Printer size={17} />
-                        Print / Download Acknowledgement
+                        Print Receipt
                     </button>
 
                     <Link
                         to={`/track?registration=${registrationNumber}`}
-                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-rti-600 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-rti-600/20 hover:bg-rti-700 transition"
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-rti-600 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-rti-600/20 hover:bg-rti-700 transition sm:col-span-1"
                     >
                         <Search size={17} />
-                        Track This Application
+                        Track RTI
                     </Link>
                 </div>
 
@@ -153,12 +165,12 @@ export default function RTISuccess() {
 
                         <div>
                             <h2 className="font-semibold text-blue-950">
-                                What happens next?
+                                Statutory SLA &amp; What happens next?
                             </h2>
 
                             <p className="mt-2 text-sm leading-6 text-blue-900/80">
                                 The Public Information Officer (PIO) of{" "}
-                                <strong>{application.authority?.name || "the Public Authority"}</strong> is mandated by the RTI Act 2005 to provide a reply within <strong>30 days</strong>.
+                                <strong>{authorityName}</strong> is mandated under Section 7(1) of the RTI Act 2005 to provide a reply within <strong>30 days</strong>. If delayed, you will receive an automatic prompt to file a First Appeal.
                             </p>
                         </div>
                     </div>
@@ -175,7 +187,6 @@ export default function RTISuccess() {
                         Return to RTI Online Home
                     </Link>
                 </div>
-
             </div>
         </div>
     );

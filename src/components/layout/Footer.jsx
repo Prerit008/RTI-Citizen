@@ -47,6 +47,11 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
+                                <Link to="/payment-reconciliation" className="hover:text-white transition">
+                                    Payment Reconciliation
+                                </Link>
+                            </li>
+                            <li>
                                 <Link to="/dashboard" className="hover:text-white transition">
                                     My RTI History
                                 </Link>

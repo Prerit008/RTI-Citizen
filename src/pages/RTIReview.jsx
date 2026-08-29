@@ -1,7 +1,6 @@
 import {
     ArrowLeft,
     ArrowRight,
-    CheckCircle2,
     Edit3,
     FileText,
     Landmark,

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
     ArrowRight,
     CheckCircle2,
@@ -13,6 +14,7 @@ import {
     TrendingUp,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useSearch } from "../context/SearchContext";
 const quickActions = [
     {
         icon: FileText,
@@ -101,6 +103,14 @@ const updates = [
 ];
 
 export default function Home() {
+    const { openSearch } = useSearch();
+    const [localQuery, setLocalQuery] = useState("");
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        openSearch(localQuery);
+    };
+
     return (
         <div>
             {/* =========================================================
@@ -149,7 +159,7 @@ export default function Home() {
                                     <FileText size={18} />
                                     File an RTI
                                     <ArrowRight size={17} />
-                                </Link >
+                                </Link>
 
                                 <Link
                                     to="/track"
@@ -187,8 +197,19 @@ export default function Home() {
 
                             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-card sm:p-8">
 
-                                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rti-50 text-rti-600">
-                                    <Landmark size={24} />
+                                <div className="flex items-center justify-between">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rti-50 text-rti-600">
+                                        <Landmark size={24} />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => openSearch("")}
+                                        className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-200 transition"
+                                    >
+                                        <Search size={13} />
+                                        <span>Global Search</span>
+                                        <kbd className="rounded bg-white px-1 py-0.2 text-[10px] shadow-2xs font-mono">Ctrl+K</kbd>
+                                    </button>
                                 </div>
 
                                 <h2 className="mt-5 text-xl font-semibold text-navy-900">
@@ -196,17 +217,16 @@ export default function Home() {
                                 </h2>
 
                                 <p className="mt-2 text-sm leading-6 text-slate-500">
-                                    Not sure who should receive your RTI? Search ministries,
-                                    departments and public authorities.
+                                    Search across all Central ministries, departments, public authorities, services, and RTI FAQs.
                                 </p>
 
-                                <div className="mt-6">
+                                <form onSubmit={handleSearchSubmit} className="mt-6">
 
                                     <label
                                         htmlFor="authority-search"
                                         className="mb-2 block text-sm font-medium text-slate-700"
                                     >
-                                        Search authority
+                                        Search authority or service
                                     </label>
 
                                     <div className="flex rounded-xl border border-slate-300 bg-white p-1.5 shadow-sm focus-within:border-rti-500 focus-within:ring-2 focus-within:ring-rti-100">
@@ -220,17 +240,40 @@ export default function Home() {
                                             <input
                                                 id="authority-search"
                                                 type="text"
-                                                placeholder="Ministry, department or authority"
+                                                value={localQuery}
+                                                onChange={(e) => setLocalQuery(e.target.value)}
+                                                onClick={() => {
+                                                    if (!localQuery) openSearch("");
+                                                }}
+                                                placeholder="e.g. Railways, Education, Tax, EPFO..."
                                                 className="w-full border-0 bg-transparent px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400"
                                             />
                                         </div>
 
-                                        <button className="rounded-lg bg-navy-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-navy-800">
+                                        <button
+                                            type="submit"
+                                            className="rounded-lg bg-navy-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-navy-800"
+                                        >
                                             Search
                                         </button>
 
                                     </div>
 
+                                </form>
+
+                                {/* Popular Search Chips */}
+                                <div className="mt-4 flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
+                                    <span className="text-slate-400">Popular:</span>
+                                    {["Railways", "Higher Education", "CBDT (Income Tax)", "Health", "UPSC"].map((tag) => (
+                                        <button
+                                            key={tag}
+                                            type="button"
+                                            onClick={() => openSearch(tag)}
+                                            className="rounded-lg bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-rti-50 hover:text-rti-700 transition"
+                                        >
+                                            {tag}
+                                        </button>
+                                    ))}
                                 </div>
 
                                 <div className="mt-6 border-t border-slate-100 pt-5">
@@ -538,13 +581,13 @@ export default function Home() {
                                     {update.description}
                                 </p>
 
-                                <a
-                                    href="#"
-                                    className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-rti-600"
+                                <Link
+                                    to="/learn"
+                                    className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-rti-600 hover:text-rti-700"
                                 >
                                     Read more
                                     <ChevronRight size={15} />
-                                </a>
+                                </Link>
 
                             </article>
                         ))}

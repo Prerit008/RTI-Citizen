@@ -7,22 +7,25 @@ import {
     LogOut,
     User,
     X,
+    Languages,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
 
 const links = [
     { label: "Home", path: "/" },
-    { label: "File RTI", path: "/file-rti" },
     { label: "Track Application", path: "/track" },
     { label: "First Appeal", path: "/first-appeal" },
     { label: "Public Authorities", path: "/authorities" },
     { label: "Learn", dropdown: true },
+    { label: "Payment Reconciliation", path: "/payment-reconciliation" },
     { label: "Help", path: "/help" },
 ];
 
 export default function Navbar() {
     const { user, logout } = useAuth();
+    const { activeLanguage, openLanguageModal } = useLanguage();
     const navigate = useNavigate();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -144,6 +147,24 @@ export default function Navbar() {
                             </Link>
                         ))}
                     </div>
+
+                    <div className="mt-4 pt-3 border-t border-slate-100">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                openLanguageModal();
+                                setMobileOpen(false);
+                            }}
+                            className="flex w-full items-center justify-between rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-navy-900 hover:bg-slate-50"
+                        >
+                            <div className="flex items-center gap-2">
+                                <Languages size={17} className="text-rti-600" />
+                                <span>Language: <strong>{activeLanguage.nativeName} ({activeLanguage.name})</strong></span>
+                            </div>
+                            <span className="text-xs font-semibold text-rti-600">Change</span>
+                        </button>
+                    </div>
+
                     <div className="mt-4 flex flex-col gap-3">
                         <Link
                             to="/file-rti"
@@ -182,4 +203,4 @@ export default function Navbar() {
             )}
         </nav>
     );
-}
+}

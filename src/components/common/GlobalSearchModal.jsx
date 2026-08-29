@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     Search,
@@ -12,6 +12,7 @@ import {
     Compass,
 } from "lucide-react";
 import { authorities } from "../../data/authorities";
+import { useSearch } from "../../context/SearchContext";
 
 const QUICK_LINKS = [
     { title: "File New RTI Application", desc: "Submit a fresh RTI request to any central ministry", path: "/file-rti", icon: FileText, tag: "Service" },
@@ -28,17 +29,25 @@ const FAQ_ITEMS = [
     { title: "How to file a First Appeal?", path: "/first-appeal", desc: "File within 30 days if no response received or info rejected." },
 ];
 
-export default function GlobalSearchModal({ isOpen, onClose }) {
-    const [query, setQuery] = useState("");
+export default function GlobalSearchModal({ isOpen: propIsOpen, onClose: propOnClose }) {
+    const searchCtx = useSearch();
+    const isOpen = propIsOpen !== undefined ? propIsOpen : searchCtx.isSearchOpen;
+    const onClose = propOnClose || searchCtx.closeSearch;
+    const query = searchCtx.searchQuery;
+    const setQuery = searchCtx.setSearchQuery;
+
     const inputRef = useRef(null);
     const navigate = useNavigate();
 
     // Focus input on open
     useEffect(() => {
         if (isOpen) {
-            setTimeout(() => inputRef.current?.focus(), 50);
-        } else {
-            setQuery("");
+            setTimeout(() => {
+                if (inputRef.current) {
+                    inputRef.current.focus();
+                    inputRef.current.select();
+                }
+            }, 50);
         }
     }, [isOpen]);
 

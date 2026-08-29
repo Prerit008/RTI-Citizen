@@ -1,89 +1,107 @@
-import { createContext, useContext, useState } from "react";
-
-// ---------------------------------------------------------------
-// Mock user database – in a real app this would be server-side
-// ---------------------------------------------------------------
-const MOCK_USERS = [
-    {
-        id: "usr-001",
-        name: "Rahul Sharma",
-        email: "rahul@citizen.in",
-        mobile: "9876543210",
-        password: "Citizen@123",
-        registeredOn: "2024-03-15",
-    },
-    {
-        id: "usr-002",
-        name: "Priya Patel",
-        email: "priya@citizen.in",
-        mobile: "9123456780",
-        password: "India@456",
-        registeredOn: "2024-05-22",
-    },
-];
-
-// Persist registered users across page reloads (session only)
-let runtimeUsers = [...MOCK_USERS];
+import { createContext, useContext, useState, useEffect } from "react";
+import { authApi } from "../services/api";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(() => {
         try {
-            const saved = sessionStorage.getItem("rti_user");
+            const saved = sessionStorage.getItem("rti_user") || localStorage.getItem("rti_user");
             return saved ? JSON.parse(saved) : null;
         } catch {
             return null;
         }
     });
 
+    const [loading, setLoading] = useState(true);
+
+    // Verify existing token on initial mount
+    useEffect(() => {
+        const verifySession = async () => {
+            if (user?.token) {
+                try {
+                    const res = await authApi.getProfile();
+                    if (res?.data?.user) {
+                        const updatedUser = { ...res.data.user, token: user.token };
+                        setUser(updatedUser);
+                        sessionStorage.setItem("rti_user", JSON.stringify(updatedUser));
+                    }
+                } catch (err) {
+                    console.warn("Session verification warning:", err.message);
+                }
+            }
+            setLoading(false);
+        };
+        verifySession();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     // ── login ──────────────────────────────────────────────────
-    const login = (email, password) => {
-        const found = runtimeUsers.find(
-            (u) =>
-                u.email.toLowerCase() === email.trim().toLowerCase() &&
-                u.password === password.trim()
-        );
-        if (!found) {
-            return { success: false, message: "Invalid email or password." };
+    const login = async (email, password) => {
+        try {
+            const res = await authApi.login({
+                email: email.trim(),
+                password: password.trim(),
+            });
+
+            if (res?.success && res.data?.user) {
+                const sessionUser = {
+                    ...res.data.user,
+                    token: res.data.token,
+                };
+                setUser(sessionUser);
+                sessionStorage.setItem("rti_user", JSON.stringify(sessionUser));
+                localStorage.setItem("rti_user", JSON.stringify(sessionUser));
+                return { success: true };
+            }
+            return {
+                success: false,
+                message: res?.message || "Invalid email or password.",
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error.data?.message || error.message || "Unable to connect to authentication server.",
+            };
         }
-        const { password: _pwd, ...safeUser } = found; // never expose password
-        setUser(safeUser);
-        sessionStorage.setItem("rti_user", JSON.stringify(safeUser));
-        return { success: true };
     };
 
     // ── register ───────────────────────────────────────────────
-    const register = (formData) => {
-        const exists = runtimeUsers.some(
-            (u) => u.email.toLowerCase() === formData.email.toLowerCase()
-        );
-        if (exists) {
+    const register = async (formData) => {
+        try {
+            const res = await authApi.register(formData);
+
+            if (res?.success && res.data?.user) {
+                const sessionUser = {
+                    ...res.data.user,
+                    token: res.data.token,
+                };
+                setUser(sessionUser);
+                sessionStorage.setItem("rti_user", JSON.stringify(sessionUser));
+                localStorage.setItem("rti_user", JSON.stringify(sessionUser));
+                return { success: true };
+            }
             return {
                 success: false,
-                message: "An account with this email already exists.",
+                message: res?.message || "Registration failed.",
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error.data?.message || error.message || "Unable to connect to authentication server.",
             };
         }
-        const newUser = {
-            id: `usr-${Date.now()}`,
-            registeredOn: new Date().toISOString().split("T")[0],
-            ...formData,
-        };
-        runtimeUsers.push(newUser);
-        const { password: _pwd, ...safeUser } = newUser;
-        setUser(safeUser);
-        sessionStorage.setItem("rti_user", JSON.stringify(safeUser));
-        return { success: true };
     };
 
     // ── logout ─────────────────────────────────────────────────
     const logout = () => {
         setUser(null);
         sessionStorage.removeItem("rti_user");
+        localStorage.removeItem("rti_user");
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout }}>
+        <AuthContext.Provider value={{ user, login, register, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );

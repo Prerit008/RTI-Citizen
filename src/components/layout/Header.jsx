@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
 import {
     Accessibility,
     Search,
     Sun,
+    Languages,
 } from "lucide-react";
 import { useAccessibility } from "../../context/AccessibilityContext";
+import { useSearch } from "../../context/SearchContext";
+import { useLanguage } from "../../context/LanguageContext";
 import GlobalSearchModal from "../common/GlobalSearchModal";
 
 export default function Header() {
@@ -17,19 +19,8 @@ export default function Header() {
         setIsPanelOpen,
     } = useAccessibility();
 
-    const [isSearchOpen, setIsSearchOpen] = useState(false);
-
-    // Global keyboard shortcut Ctrl+K or Cmd+K
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === "k") {
-                e.preventDefault();
-                setIsSearchOpen((p) => !p);
-            }
-        };
-        window.addEventListener("keydown", handleKeyDown);
-        return () => window.removeEventListener("keydown", handleKeyDown);
-    }, []);
+    const { openSearch } = useSearch();
+    const { activeLanguage, openLanguageModal } = useLanguage();
 
     return (
         <>
@@ -71,9 +62,8 @@ export default function Header() {
 
                         <button
                             onClick={toggleHighContrast}
-                            className={`flex items-center gap-1 transition hover:text-white/80 ${
-                                settings.highContrast ? "text-amber-400 font-bold" : ""
-                            }`}
+                            className={`flex items-center gap-1 transition hover:text-white/80 ${settings.highContrast ? "text-amber-400 font-bold" : ""
+                                }`}
                             aria-label="Toggle High Contrast"
                             title="Toggle High Contrast Mode"
                         >
@@ -83,8 +73,15 @@ export default function Header() {
                             </span>
                         </button>
 
-                        <button className="hover:text-white/80">
-                            हिन्दी
+                        <button
+                            onClick={openLanguageModal}
+                            className="flex items-center gap-1.5 font-medium transition hover:text-white/80 rounded px-1.5 py-0.5 border border-white/20 hover:border-white/40 focus:outline-none focus:ring-1 focus:ring-white/40"
+                            aria-label="Change Indian Regional Language"
+                            title="Select Indian Language"
+                        >
+                            <Languages size={14} className="text-amber-300" />
+                            <span>{activeLanguage.nativeName}</span>
+                            <span className="text-[10px] text-white/60 hidden sm:inline">({activeLanguage.name})</span>
                         </button>
                     </div>
 
@@ -122,11 +119,10 @@ export default function Header() {
                         {/* A- Decrease */}
                         <button
                             onClick={decreaseFontSize}
-                            className={`rounded-xl border px-3 py-2 text-sm font-medium transition ${
-                                settings.fontSize === "small"
+                            className={`rounded-xl border px-3 py-2 text-sm font-medium transition ${settings.fontSize === "small"
                                     ? "border-rti-600 bg-rti-50 font-bold text-rti-700 shadow-sm"
                                     : "border-slate-200 text-slate-600 hover:bg-slate-50"
-                            }`}
+                                }`}
                             title="Decrease text size (A−)"
                             aria-label="Decrease text size"
                         >
@@ -136,11 +132,10 @@ export default function Header() {
                         {/* A Normal */}
                         <button
                             onClick={resetFontSize}
-                            className={`rounded-xl border px-3 py-2 text-sm font-medium transition ${
-                                settings.fontSize === "normal"
+                            className={`rounded-xl border px-3 py-2 text-sm font-medium transition ${settings.fontSize === "normal"
                                     ? "border-rti-600 bg-rti-50 font-bold text-rti-700 shadow-sm"
                                     : "border-slate-200 text-slate-600 hover:bg-slate-50"
-                            }`}
+                                }`}
                             title="Reset text size to default (A)"
                             aria-label="Default text size"
                         >
@@ -150,11 +145,10 @@ export default function Header() {
                         {/* A+ Increase */}
                         <button
                             onClick={increaseFontSize}
-                            className={`rounded-xl border px-3 py-2 text-sm font-medium transition ${
-                                settings.fontSize === "large" || settings.fontSize === "xlarge"
+                            className={`rounded-xl border px-3 py-2 text-sm font-medium transition ${settings.fontSize === "large" || settings.fontSize === "xlarge"
                                     ? "border-rti-600 bg-rti-50 font-bold text-rti-700 shadow-sm"
                                     : "border-slate-200 text-slate-600 hover:bg-slate-50"
-                            }`}
+                                }`}
                             title="Increase text size (A+)"
                             aria-label="Increase text size"
                         >
@@ -163,7 +157,7 @@ export default function Header() {
 
                         {/* Search button */}
                         <button
-                            onClick={() => setIsSearchOpen(true)}
+                            onClick={() => openSearch("")}
                             className="ml-2 flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-600 transition hover:border-rti-300 hover:bg-slate-50"
                             title="Search RTI Portal (Ctrl+K)"
                             aria-label="Search RTI Portal"
@@ -179,10 +173,7 @@ export default function Header() {
             </header>
 
             {/* Global Search Dialog */}
-            <GlobalSearchModal
-                isOpen={isSearchOpen}
-                onClose={() => setIsSearchOpen(false)}
-            />
+            <GlobalSearchModal />
         </>
     );
 }

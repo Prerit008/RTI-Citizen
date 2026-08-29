@@ -1,4 +1,4 @@
-import { Check, Clock, FileCheck, Send } from "lucide-react";
+import { Check, Clock, FileCheck } from "lucide-react";
 
 export default function RTITimeline({ timeline }) {
     return (
