@@ -25,6 +25,18 @@ export const userRepository = {
         return newUser;
     },
 
+    async update(id, updateData) {
+        if (!id) return null;
+        const index = users.findIndex((u) => u.id === id);
+        if (index === -1) return null;
+
+        users[index] = {
+            ...users[index],
+            ...updateData,
+        };
+        return users[index];
+    },
+
     async list() {
         return users.map(({ password, ...safeUser }) => safeUser);
     },

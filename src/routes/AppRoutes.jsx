@@ -20,24 +20,28 @@ import RTIPayment from "../pages/RTIPayment";
 import RTISuccess from "../pages/RTISuccess";
 import NotFound from "../pages/NotFound";
 
+import Profile from "../pages/Profile";
+import ProtectedRoute from "../components/common/ProtectedRoute";
+
 export default function AppRoutes() {
     return (
         <Routes>
             {/* Home */}
             <Route path="/" element={<Home />} />
 
-            {/* Citizen filing wizard */}
-            <Route path="/file-rti" element={<FileRTI />} />
-            <Route path="/file-rti/applicant" element={<RTIApplicant />} />
-            <Route path="/file-rti/request" element={<RTIRequest />} />
-            <Route path="/file-rti/review" element={<RTIReview />} />
-            <Route path="/file-rti/payment" element={<RTIPayment />} />
-            <Route path="/file-rti/success" element={<RTISuccess />} />
+            {/* Citizen filing wizard (Protected for Logged-In Citizens) */}
+            <Route path="/file-rti" element={<ProtectedRoute><FileRTI /></ProtectedRoute>} />
+            <Route path="/file-rti/applicant" element={<ProtectedRoute><RTIApplicant /></ProtectedRoute>} />
+            <Route path="/file-rti/request" element={<ProtectedRoute><RTIRequest /></ProtectedRoute>} />
+            <Route path="/file-rti/review" element={<ProtectedRoute><RTIReview /></ProtectedRoute>} />
+            <Route path="/file-rti/payment" element={<ProtectedRoute><RTIPayment /></ProtectedRoute>} />
+            <Route path="/file-rti/success" element={<ProtectedRoute><RTISuccess /></ProtectedRoute>} />
 
             {/* Citizen services */}
             <Route path="/track" element={<TrackApplication />} />
             <Route path="/first-appeal" element={<FirstAppeal />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/payment-reconciliation" element={<PaymentReconciliation />} />
 
             {/* Public authorities */}

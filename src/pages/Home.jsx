@@ -201,15 +201,7 @@ export default function Home() {
                                     <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rti-50 text-rti-600">
                                         <Landmark size={24} />
                                     </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => openSearch("")}
-                                        className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-200 transition"
-                                    >
-                                        <Search size={13} />
-                                        <span>Global Search</span>
-                                        <kbd className="rounded bg-white px-1 py-0.2 text-[10px] shadow-2xs font-mono">Ctrl+K</kbd>
-                                    </button>
+
                                 </div>
 
                                 <h2 className="mt-5 text-xl font-semibold text-navy-900">
@@ -245,7 +237,7 @@ export default function Home() {
                                                 onClick={() => {
                                                     if (!localQuery) openSearch("");
                                                 }}
-                                                placeholder="e.g. Railways, Education, Tax, EPFO..."
+                                                placeholder="e.g. Railways, Education...."
                                                 className="w-full border-0 bg-transparent px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400"
                                             />
                                         </div>
@@ -264,7 +256,7 @@ export default function Home() {
                                 {/* Popular Search Chips */}
                                 <div className="mt-4 flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
                                     <span className="text-slate-400">Popular:</span>
-                                    {["Railways", "Higher Education", "CBDT (Income Tax)", "Health", "UPSC"].map((tag) => (
+                                    {["Railways", "Health", "Scholarship", "Environment"].map((tag) => (
                                         <button
                                             key={tag}
                                             type="button"

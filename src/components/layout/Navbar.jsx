@@ -6,6 +6,7 @@ import {
     LogIn,
     LogOut,
     User,
+    UserCheck,
     X,
     Languages,
 } from "lucide-react";
@@ -97,6 +98,13 @@ export default function Navbar() {
                                     >
                                         <User size={15} /> My Dashboard
                                     </Link>
+                                    <Link
+                                        to="/profile"
+                                        onClick={() => setUserMenuOpen(false)}
+                                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-navy-900"
+                                    >
+                                        <UserCheck size={15} /> Profile &amp; Settings
+                                    </Link>
                                     <button
                                         onClick={handleLogout}
                                         className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50"
@@ -181,6 +189,13 @@ export default function Navbar() {
                                     className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 py-3 text-sm font-medium text-navy-900 hover:bg-slate-50"
                                 >
                                     <User size={17} /> My Dashboard
+                                </Link>
+                                <Link
+                                    to="/profile"
+                                    onClick={() => setMobileOpen(false)}
+                                    className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 py-3 text-sm font-medium text-navy-900 hover:bg-slate-50"
+                                >
+                                    <UserCheck size={17} /> Profile &amp; Settings
                                 </Link>
                                 <button
                                     onClick={() => { handleLogout(); setMobileOpen(false); }}

@@ -120,4 +120,51 @@ export const authController = {
             next(error);
         }
     },
+
+    /**
+     * Update authenticated citizen profile
+     * PUT /api/auth/profile
+     */
+    async updateProfile(req, res, next) {
+        try {
+            const userId = req.user.id;
+            const { name, mobile, address, city, state, pincode, gender, fatherOrSpouseName, dateOfBirth, preferredLanguage, isBPL, bplCardNumber, bplState, bplAuthority } = req.body;
+
+            const updated = await userRepository.update(userId, {
+                ...(name && { name: name.trim() }),
+                ...(mobile !== undefined && { mobile: mobile.trim() }),
+                ...(address !== undefined && { address: address.trim() }),
+                ...(city !== undefined && { city: city.trim() }),
+                ...(state !== undefined && { state: state.trim() }),
+                ...(pincode !== undefined && { pincode: pincode.trim() }),
+                ...(gender !== undefined && { gender }),
+                ...(fatherOrSpouseName !== undefined && { fatherOrSpouseName: fatherOrSpouseName.trim() }),
+                ...(dateOfBirth !== undefined && { dateOfBirth }),
+                ...(preferredLanguage !== undefined && { preferredLanguage }),
+                ...(isBPL !== undefined && { isBPL }),
+                ...(bplCardNumber !== undefined && { bplCardNumber }),
+                ...(bplState !== undefined && { bplState }),
+                ...(bplAuthority !== undefined && { bplAuthority }),
+            });
+
+            if (!updated) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Citizen user profile not found.",
+                });
+            }
+
+            const { password: _p, ...safeUser } = updated;
+
+            return res.status(200).json({
+                success: true,
+                message: "Profile updated successfully.",
+                data: {
+                    user: safeUser,
+                },
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
 };

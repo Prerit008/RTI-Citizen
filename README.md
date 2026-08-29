@@ -154,14 +154,14 @@ npm run server:dev
 
 ## 🔑 Demo & Test Credentials
 
-| Role | Email | Password | Pre-loaded Applications |
+| Role | Email | Password | Purpose |
 |---|---|---|---|
-| **Citizen 1** | `rahul@citizen.in` | `Citizen@123` | `RTI/2026/123456`, `RTI/2026/098721` |
-| **Citizen 2** | `priya@citizen.in` | `India@456` | `RTI/2026/451209` |
+| **Demo Citizen 1** | `demo.citizen@example.com` | `Citizen@123` | Pre-loaded sandbox test account (`RTI/2026/123456`, `RTI/2026/098721`) |
+| **Demo Citizen 2** | `test.applicant@example.com` | `India@456` | Pre-loaded sandbox test account (`RTI/2026/074321`) |
 
 *Quick test demo registration numbers for status tracking:*
-- `RTI/2026/123456` *(Active — Under Review with Railways)*
-- `RTI/2026/098721` *(Response Ready — Ministry of Education)*
+- `RTI/2026/123456` *(Active — Under Review with Demo Railways)*
+- `RTI/2026/098721` *(Response Ready — Demo Education)*
 
 ---
 

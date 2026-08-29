@@ -93,6 +93,43 @@ export function AuthProvider({ children }) {
         }
     };
 
+    // ── updateProfile ──────────────────────────────────────────
+    const updateProfile = async (profileData) => {
+        try {
+            const res = await authApi.updateProfile(profileData);
+            if (res?.success && res.data?.user) {
+                const updated = {
+                    ...user,
+                    ...res.data.user,
+                    token: user?.token,
+                };
+                setUser(updated);
+                sessionStorage.setItem("rti_user", JSON.stringify(updated));
+                localStorage.setItem("rti_user", JSON.stringify(updated));
+                return { success: true, user: updated };
+            }
+            // If offline/mock fallback
+            const fallbackUser = {
+                ...user,
+                ...profileData,
+            };
+            setUser(fallbackUser);
+            sessionStorage.setItem("rti_user", JSON.stringify(fallbackUser));
+            localStorage.setItem("rti_user", JSON.stringify(fallbackUser));
+            return { success: true, user: fallbackUser };
+        } catch (err) {
+            console.warn("Update profile API error, saving locally:", err.message);
+            const fallbackUser = {
+                ...user,
+                ...profileData,
+            };
+            setUser(fallbackUser);
+            sessionStorage.setItem("rti_user", JSON.stringify(fallbackUser));
+            localStorage.setItem("rti_user", JSON.stringify(fallbackUser));
+            return { success: true, user: fallbackUser };
+        }
+    };
+
     // ── logout ─────────────────────────────────────────────────
     const logout = () => {
         setUser(null);
@@ -101,7 +138,7 @@ export function AuthProvider({ children }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, register, updateProfile, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );

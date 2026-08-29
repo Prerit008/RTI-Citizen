@@ -17,8 +17,8 @@ import MathCaptcha from "../components/common/MathCaptcha";
 function MockCredentialsHint({ onFill }) {
     const [open, setOpen] = useState(false);
     const CREDS = [
-        { label: "Citizen 1", email: "rahul@citizen.in", pass: "Citizen@123" },
-        { label: "Citizen 2", email: "priya@citizen.in", pass: "India@456" },
+        { label: "Demo Citizen 1", email: "demo.citizen@example.com", pass: "Citizen@123", desc: "Sandbox account with preloaded demo RTIs" },
+        { label: "Demo Citizen 2", email: "test.applicant@example.com", pass: "India@456", desc: "Sandbox account for First Appeal testing" },
     ];
     return (
         <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">

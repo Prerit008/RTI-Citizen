@@ -110,10 +110,10 @@ export const applicationRepository = {
         };
     },
 
-    async findByUserId(userId) {
-        if (!userId) return [];
+    async findByUser(userId, userEmail) {
+        if (!userId && !userEmail) return [];
         return applications
-            .filter((a) => a.userId === userId)
+            .filter((a) => (userId && a.userId === userId) || (userEmail && a.applicantEmail?.toLowerCase() === userEmail?.toLowerCase()))
             .map((app) => ({
                 ...app,
                 slaCountdown: calculateSlaCountdown(app.slaDeadlineDate),
@@ -127,9 +127,9 @@ export const applicationRepository = {
         }));
     },
 
-    async getStats(userId = null) {
-        const list = userId
-            ? applications.filter((a) => a.userId === userId)
+    async getStats(userId = null, userEmail = null) {
+        const list = (userId || userEmail)
+            ? applications.filter((a) => (userId && a.userId === userId) || (userEmail && a.applicantEmail?.toLowerCase() === userEmail?.toLowerCase()))
             : applications;
 
         const total = list.length;

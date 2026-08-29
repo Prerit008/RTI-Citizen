@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import RTIApplicationCard from "../components/rti/RTIApplicationCard";
-import { dashboardApplications, dashboardStats } from "../data/mockDashboard";
+import { dashboardStats } from "../data/mockDashboard";
 import { useAuth } from "../context/AuthContext";
 import { applicationApi } from "../services/api";
 
@@ -46,26 +46,25 @@ export default function Dashboard() {
                 }));
             }
 
-            // Fallback to local storage if API didn't return or returned empty
-            if (loadedApps.length === 0) {
+            // Check local storage for any applications created by this user in offline mode
+            if (loadedApps.length === 0 && user) {
                 try {
                     const raw = localStorage.getItem("submitted_rtis");
                     if (raw) {
-                        const localList = Object.values(JSON.parse(raw)).map((item) => ({
-                            id: item.registrationNumber,
-                            subject: item.requestText?.slice(0, 75) + "..." || "RTI Information Request",
-                            authority: item.authorityName,
-                            submittedOn: item.filedDate,
-                            status: item.status || "With Public Authority",
-                            statusType: "active",
-                        }));
-                        loadedApps = [...localList, ...dashboardApplications];
-                    } else {
-                        loadedApps = dashboardApplications;
+                        const localList = Object.values(JSON.parse(raw))
+                            .filter((item) => (user.id && item.userId === user.id) || (user.email && item.applicantEmail?.toLowerCase() === user.email.toLowerCase()))
+                            .map((item) => ({
+                                id: item.registrationNumber,
+                                subject: item.requestText?.slice(0, 75) + "..." || "RTI Information Request",
+                                authority: item.authorityName,
+                                submittedOn: item.filedDate,
+                                status: item.status || "With Public Authority",
+                                statusType: "active",
+                                slaCountdown: item.slaCountdown,
+                            }));
+                        loadedApps = localList;
                     }
-                } catch (e) {
-                    loadedApps = dashboardApplications;
-                }
+                } catch (e) { }
             }
 
             setApplications(loadedApps);
@@ -82,8 +81,8 @@ export default function Dashboard() {
             }
         } catch (err) {
             console.warn("Failed to load dashboard data from API:", err);
-            setApplications(dashboardApplications);
-            setStats(dashboardStats);
+            setApplications([]);
+            setStats({ total: 0, active: 0, responseReady: 0, closed: 0 });
         } finally {
             setLoading(false);
         }
@@ -91,6 +90,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         loadDashboardData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     const responseReadyApp = applications.find((a) => a.statusType === "response" || a.status === "Response Ready");
@@ -124,14 +124,6 @@ export default function Dashboard() {
                             >
                                 <RefreshCw size={17} className={loading ? "animate-spin text-rti-600" : ""} />
                             </button>
-
-                            <Link
-                                to="/file-rti"
-                                className="inline-flex items-center justify-center gap-2 rounded-xl bg-rti-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-rti-600/20 transition hover:bg-rti-700"
-                            >
-                                <Plus size={17} />
-                                File new RTI
-                            </Link>
                         </div>
                     </div>
                 </div>
@@ -219,8 +211,9 @@ export default function Dashboard() {
 
                     <div className="space-y-4">
                         {loading && applications.length === 0 ? (
-                            <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 text-slate-500">
-                                Loading applications from server...
+                            <div className="p-12 text-center bg-white rounded-3xl border border-slate-200 text-slate-500">
+                                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-rti-600 border-t-transparent mb-3" />
+                                <p className="text-sm">Loading applications from server...</p>
                             </div>
                         ) : applications.length > 0 ? (
                             applications.map((application) => (
@@ -230,8 +223,25 @@ export default function Dashboard() {
                                 />
                             ))
                         ) : (
-                            <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 text-slate-500">
-                                No RTI applications filed yet. Click "File new RTI" to submit your first request.
+                            <div className="p-10 sm:p-14 text-center bg-white rounded-3xl border border-slate-200 shadow-soft">
+                                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-rti-50 text-rti-600 mb-4">
+                                    <FilePlus2 size={32} />
+                                </div>
+                                <h3 className="text-lg font-bold text-navy-900">
+                                    No RTI Applications Filed Yet
+                                </h3>
+                                <p className="mt-1 text-sm text-slate-500 max-w-md mx-auto">
+                                    You have not submitted any RTI requests under this account. File a new request to track its 30-day statutory SLA countdown and public disclosures.
+                                </p>
+                                <div className="mt-6">
+                                    <Link
+                                        to="/file-rti"
+                                        className="inline-flex items-center gap-2 rounded-xl bg-rti-600 px-5 py-3 text-sm font-semibold text-white shadow-md hover:bg-rti-700 transition"
+                                    >
+                                        <Plus size={18} />
+                                        File Your First RTI
+                                    </Link>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -286,17 +296,15 @@ export default function Dashboard() {
 function StatCard({ icon: Icon, label, value, highlight = false }) {
     return (
         <div
-            className={`rounded-2xl border bg-white p-5 ${
-                highlight ? "border-green-200" : "border-slate-200"
-            }`}
+            className={`rounded-2xl border bg-white p-5 ${highlight ? "border-green-200" : "border-slate-200"
+                }`}
         >
             <div className="flex items-center justify-between">
                 <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-xl ${
-                        highlight
+                    className={`flex h-10 w-10 items-center justify-center rounded-xl ${highlight
                             ? "bg-green-50 text-green-600"
                             : "bg-slate-100 text-slate-500"
-                    }`}
+                        }`}
                 >
                     <Icon size={19} />
                 </div>

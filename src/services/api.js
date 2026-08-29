@@ -68,6 +68,12 @@ export const authApi = {
         }),
 
     getProfile: () => request("/auth/me"),
+
+    updateProfile: (profileData) =>
+        request("/auth/profile", {
+            method: "PUT",
+            body: JSON.stringify(profileData),
+        }),
 };
 
 // ── RTI Application APIs ────────────────────────────────────────

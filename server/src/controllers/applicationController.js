@@ -28,16 +28,16 @@ export const applicationController = {
     },
 
     /**
-     * List applications (for current user if authenticated, or query)
+     * List applications (for current user if authenticated, or empty for new user)
      * GET /api/applications
      */
     async list(req, res, next) {
         try {
             let list = [];
-            if (req.user?.id) {
-                list = await applicationRepository.findByUserId(req.user.id);
+            if (req.user?.id || req.user?.email) {
+                list = await applicationRepository.findByUser(req.user.id, req.user.email);
             } else {
-                list = await applicationRepository.findAll();
+                list = [];
             }
 
             return res.status(200).json({
@@ -86,7 +86,8 @@ export const applicationController = {
     async getStats(req, res, next) {
         try {
             const userId = req.user?.id || null;
-            const stats = await applicationRepository.getStats(userId);
+            const userEmail = req.user?.email || null;
+            const stats = await applicationRepository.getStats(userId, userEmail);
 
             return res.status(200).json({
                 success: true,

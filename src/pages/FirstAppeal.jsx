@@ -317,7 +317,7 @@ export default function FirstAppeal() {
                                         </label>
                                         <input
                                             type="email"
-                                            placeholder="you@citizen.in"
+                                            placeholder="you@example.com"
                                             value={parentEmail}
                                             onChange={(e) => setParentEmail(e.target.value)}
                                             className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-navy-900 outline-none focus:border-rti-500 focus:ring-2 focus:ring-rti-50"
