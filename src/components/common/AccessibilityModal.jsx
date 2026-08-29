@@ -28,8 +28,14 @@ export default function AccessibilityModal() {
     if (!isPanelOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm animate-fadeIn">
-            <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl transition-all">
+        <div
+            onClick={() => setIsPanelOpen(false)}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm animate-fadeIn cursor-pointer"
+        >
+            <div
+                onClick={(e) => e.stopPropagation()}
+                className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl transition-all cursor-default"
+            >
 
                 {/* Header */}
                 <div className="flex items-center justify-between border-b border-slate-100 pb-4">

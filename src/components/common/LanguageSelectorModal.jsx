@@ -35,8 +35,14 @@ export default function LanguageSelectorModal() {
     if (!isLangModalOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn">
-            <div className="w-full max-w-3xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl transition-all">
+        <div
+            onClick={closeLanguageModal}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn cursor-pointer"
+        >
+            <div
+                onClick={(e) => e.stopPropagation()}
+                className="w-full max-w-3xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl transition-all cursor-default"
+            >
                 {/* Header */}
                 <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5 bg-gradient-to-r from-slate-50 to-white">
                     <div className="flex items-center gap-3">

@@ -101,8 +101,14 @@ export default function GlobalSearchModal({ isOpen: propIsOpen, onClose: propOnC
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 pt-16 px-4 backdrop-blur-sm animate-fadeIn">
-            <div className="w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl transition-all">
+        <div
+            onClick={onClose}
+            className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 pt-16 px-4 backdrop-blur-sm animate-fadeIn cursor-pointer"
+        >
+            <div
+                onClick={(e) => e.stopPropagation()}
+                className="w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl transition-all cursor-default"
+            >
 
                 {/* Search Input Header */}
                 <div className="flex items-center gap-3 border-b border-slate-100 px-5 py-4 bg-slate-50/50">
