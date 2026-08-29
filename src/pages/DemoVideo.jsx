@@ -1,7 +1,7 @@
 import { ArrowLeft, PlayCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const DEMO_VIDEO_URL = "";
+const DEMO_VIDEO_URL = "https://www.canva.com/design/DAHTsKdtQpU/mjErO4Qc8S9AGAD_jRr2lA/watch?embed";
 
 export default function DemoVideo() {
     return (
