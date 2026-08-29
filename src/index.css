@@ -117,6 +117,73 @@ html.underline-links a {
     text-underline-offset: 3px !important;
 }
 
+/* ── Sleek Dark Mode Styling ── */
+html.dark {
+    color-scheme: dark;
+    background-color: #0b0f19 !important;
+    color: #f1f5f9 !important;
+}
+
+html.dark body {
+    background-color: #0b0f19 !important;
+    color: #f1f5f9 !important;
+}
+
+html.dark header,
+html.dark nav,
+html.dark footer,
+html.dark main,
+html.dark section {
+    background-color: #0f172a !important;
+    color: #f1f5f9 !important;
+    border-color: #1e293b !important;
+}
+
+html.dark .bg-white {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+    border-color: #334155 !important;
+}
+
+html.dark .bg-slate-50,
+html.dark .bg-slate-100 {
+    background-color: #0f172a !important;
+    color: #cbd5e1 !important;
+}
+
+html.dark .text-navy-900,
+html.dark .text-navy-950,
+html.dark .text-slate-900 {
+    color: #f8fafc !important;
+}
+
+html.dark .text-slate-700,
+html.dark .text-slate-600,
+html.dark .text-slate-500 {
+    color: #94a3b8 !important;
+}
+
+html.dark .border-slate-200,
+html.dark .border-slate-300,
+html.dark .border-slate-100 {
+    border-color: #334155 !important;
+}
+
+html.dark input,
+html.dark textarea,
+html.dark select {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+    border-color: #475569 !important;
+}
+
+html.dark .shadow-card,
+html.dark .shadow-soft,
+html.dark .shadow-sm {
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* High Contrast Fallback */
 html.high-contrast {
     background-color: #0d0d0d !important;
     color: #ffffff !important;
@@ -125,29 +192,4 @@ html.high-contrast {
 html.high-contrast body {
     background-color: #0d0d0d !important;
     color: #ffffff !important;
-}
-
-html.high-contrast header,
-html.high-contrast nav,
-html.high-contrast footer,
-html.high-contrast div,
-html.high-contrast section,
-html.high-contrast article,
-html.high-contrast main {
-    background-color: #121212 !important;
-    color: #ffffff !important;
-    border-color: #333333 !important;
-}
-
-html.high-contrast button,
-html.high-contrast a {
-    color: #ffff00 !important;
-}
-
-html.high-contrast input,
-html.high-contrast textarea,
-html.high-contrast select {
-    background-color: #1a1a1a !important;
-    color: #ffffff !important;
-    border-color: #ffffff !important;
 }

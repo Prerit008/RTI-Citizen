@@ -18,7 +18,7 @@ const links = [
     { label: "Track Application", path: "/track" },
     { label: "First Appeal", path: "/first-appeal" },
     { label: "Public Authorities", path: "/authorities" },
-    { label: "Learn", dropdown: true },
+    { label: "Learn", path: "/learn" },
     { label: "Payment Reconciliation", path: "/payment-reconciliation" },
     { label: "Help", path: "/help" },
 ];

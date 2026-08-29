@@ -1,70 +1,197 @@
-# Getting Started with Create React App
+# RTI Online Citizen Platform (Next-Gen, Citizen-First)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+> **Official Right to Information (RTI) Web Portal — Government of India**  
+> Built under the statutory provisions of the **Right to Information Act, 2005**, designed with a radical **citizen-experience-first** architecture.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🏛️ Platform Overview
 
-### `npm start`
+The **RTI Online Citizen Platform** is a unified digital front-door allowing citizens across India — regardless of language, literacy, device, or connectivity — to file RTI applications, monitor statutory 30-day SLA countdowns with radical transparency, preference First Appeals under Section 19(1), reconcile online payment disputes, and access official public disclosures.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## ✨ Key Platform Features
 
-### `npm test`
+### 1. Guided Citizen Filing Wizard (`/file-rti`)
+- **4-Step Intuitive Flow**:
+  1. **Authority Selection**: Search and filter through Central Ministries, Departments, and Public Authorities.
+  2. **Applicant Particulars**: Personal, contact, address, and BPL exemption card verification.
+  3. **Information Request Drafting**: Plain-language drafting aid with a 3,000-character input box and PDF supporting document attachment.
+  4. **Review & Payment**: Summary review, fee calculation (₹10 standard, ₹0 for BPL cardholders), and multi-mode payment simulation (UPI, NetBanking, Cards).
+- **Statutory 30-Day SLA**: Computes and stores strict legal disposal deadlines upon submission.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 2. Parent-Child First Appeal Engine (`/first-appeal`)
+- **Statutory Hierarchy (Section 19(1) RTI Act 2005)**:
+  - Directly appeals against handling/decision of a parent RTI application.
+  - Requires and verifies an existing **Parent RTI Registration Number**.
+  - Automatically updates the parent RTI timeline and flags status to *"Under First Appeal"*.
+- **Pre-configured Statutory Grounds**:
+  - *No response received within 30 days (Deemed Refusal under Sec. 7(2))*
+  - *Information wrongfully refused / rejected by CPIO*
+  - *Incomplete, misleading or false information provided*
+  - *Unreasonable additional fee demanded*
+  - *Delay / improper transfer under Section 6(3)*
+- **₹0 Statutory Fee**: 100% free filing as mandated by RTI Rules, 2012.
+- **FAA SLA Clock**: Real-time 30-day First Appellate Authority (FAA) disposal tracking under Section 19(6).
 
-### `npm run build`
+### 3. Official Downloadable Vector PDF Generators
+- **RTI Application Acknowledgement PDF**: Downloadable at submission (`/file-rti/success`) and anytime during tracking (`/track`). Features the Government of India letterhead, DoPT portal banner, registration number, filing timestamp, CPIO routing, applicant details, 30-day SLA deadline, and QR verification stamp.
+- **PIO Official Information Disclosure Letter PDF**: Downloadable when an application reaches *"Response Ready"*. Contains official Ministry dispatch file number (`F.No. RTI/.../DISP-...`), date of disposal, itemized point-by-point disclosure facts, FAA details, and CPIO digital signature.
+- **First Appeal Memorandum PDF**: Formal Section 19(1) appeal receipt with appeal registration number, parent RTI reference, grounds, relief sought, and legal timelines.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 4. Real-time Application & SLA Tracking (`/track`)
+- Track by unique **Registration Number** (e.g. `RTI/2026/123456`).
+- Transparent audit trail timeline from submission to CPIO review to response disposal.
+- Live **Statutory SLA Clock** showing remaining days before deadline.
+- Direct auto-escalation prompt to *"File First Appeal against this RTI"* if 30 days pass or response is unsatisfactory.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 5. Multilingual Indian Regional Language Auto-Translation
+- Auto-translates the **entire portal** across **12+ major Indian regional languages**:
+  - **Hindi (हिन्दी)**
+  - **Bengali (বাংলা)**
+  - **Marathi (मराठी)**
+  - **Telugu (తెలుగు)**
+  - **Tamil (தமிழ்)**
+  - **Gujarati (ગુજરાતી)**
+  - **Kannada (ಕನ್ನಡ)**
+  - **Malayalam (മലയാളം)**
+  - **Punjabi (ਪੰਜਾਬੀ)**
+  - **Odia (ଓଡ଼ିଆ)**
+  - **Assamese (অসমীয়া)**
+  - **Urdu (اردو)**
+  - **English (Default)**
+- **Headless Branding & Zero-Offset**: Suppresses third-party top frames, banners, and tooltips via CSS and MutationObservers, keeping the top government bar and accessibility controls perfectly aligned.
+- **Language Selector Modal**: Native script cards with state and language search.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 6. Payment Reconciliation Portal (`/payment-reconciliation`)
+- Resolves instances where fees were debited from bank/UPI accounts without registration number generation.
+- **Transaction Settlement Verifier**: Look up by Bank Reference / UTR Number or contact details.
+- **Grievance Ticket System**: Issues tracked reconciliation tickets (`PR-2026-XXXXXX`).
+- Clarifies 24–48 hr bank settlement cycle and 3–5 working day auto-refund window.
 
-### `npm run eject`
+### 7. Official Help Desk & Support Centre (`/help`)
+- Prominent official notice:
+  > **Help Desk :** For any query or feedback related to this portal, Please contact at **011-24010690/691 new**, during office hours **(9:00 AM to 5:30 PM, Monday to Friday except Public Holidays)** or send an email to `helprtionline-dopt[at]nic[dot]in`. Due to high call volume, call waiting may occur.
+- One-click click-to-call, email dispatch, and copy actions.
+- General grievance & inquiry ticketing system (`HD-2026-XXXXXX`).
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 8. Unified Global Search (`Ctrl+K`)
+- Search bar on the Home page hero connects directly to the header Global Search Modal.
+- Live keyword search across Public Authorities, Services, and 26 FAQ topics.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 9. Accessibility (WCAG 2.2 AA Compliant)
+- Font size adjustment (`A-`, `A`, `A+`).
+- High Contrast mode toggle.
+- Grayscale mode and readable typography filters.
+- Skip-to-main-content screen reader links and full ARIA keyboard navigation.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🛠️ Architecture & Tech Stack
 
-## Learn More
+```
+┌────────────────────────────────────────────────────────┐
+│                   Citizen Web Client                   │
+│      React 19 · React Router v7 · Tailwind CSS · PWA   │
+└───────────────────────────┬────────────────────────────┘
+                            │ (REST APIs + JWT Auth)
+┌───────────────────────────▼────────────────────────────┐
+│               Express.js Modular Backend               │
+│                  Port: 5001 (Node.js)                  │
+├────────────────────────────────────────────────────────┤
+│  • Auth Controller & JWT Verification                  │
+│  • Application Controller & 30-Day SLA Engine          │
+│  • Appeal Controller (Parent-Child Section 19(1))      │
+│  • Authority Controller & Directory Search             │
+│  • In-Memory Repository Layer (Mongoose-Ready)         │
+└────────────────────────────────────────────────────────┘
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- **Frontend**: React 19, React Router v7, Tailwind CSS, Lucide React, jsPDF.
+- **Backend**: Express.js (v5), JSON Web Tokens (JWT), bcryptjs, Morgan logger, CORS.
+- **Storage Layer**: In-memory repository pattern designed for zero-refactor transition to MongoDB/PostgreSQL.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+## 🚀 Quick Start Guide
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Prerequisites
+- Node.js (v18.x or higher)
+- npm (v9.x or higher)
 
-### Analyzing the Bundle Size
+### Installation & Setup
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Prerit008/RTI-Citizen.git
+   cd RTI-Citizen
+   ```
 
-### Making a Progressive Web App
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+3. **Start Full-Stack Development Server**:
+   ```bash
+   npm run dev
+   ```
+   - **Frontend App**: `http://localhost:3000`
+   - **Backend API**: `http://localhost:5001`
+   - **Backend Health Check**: `http://localhost:5001/api/health`
 
-### Advanced Configuration
+Alternatively, run them in separate terminals:
+```bash
+# Terminal 1: Start React Frontend
+npm start
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+# Terminal 2: Start Express Backend
+npm run server:dev
+```
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 🔑 Demo & Test Credentials
 
-### `npm run build` fails to minify
+| Role | Email | Password | Pre-loaded Applications |
+|---|---|---|---|
+| **Citizen 1** | `rahul@citizen.in` | `Citizen@123` | `RTI/2026/123456`, `RTI/2026/098721` |
+| **Citizen 2** | `priya@citizen.in` | `India@456` | `RTI/2026/451209` |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+*Quick test demo registration numbers for status tracking:*
+- `RTI/2026/123456` *(Active — Under Review with Railways)*
+- `RTI/2026/098721` *(Response Ready — Ministry of Education)*
+
+---
+
+## 📡 Backend API Endpoints
+
+### 🔐 Authentication (`/api/auth`)
+- `POST /api/auth/register` — Register a new citizen account
+- `POST /api/auth/login` — Sign in and obtain JWT token
+- `GET /api/auth/me` — Get current logged-in user profile (Bearer token required)
+
+### 📋 RTI Applications (`/api/applications`)
+- `POST /api/applications` — Submit a new RTI application
+- `GET /api/applications` — List citizen's filed applications
+- `GET /api/applications/:regNumber` — Track application status & SLA countdown
+- `GET /api/applications/stats/summary` — Overview metrics (Active, Completed, Appeals)
+
+### ⚖️ First Appeals (`/api/appeals`)
+- `POST /api/appeals` — File First Appeal linked to parent RTI application
+- `GET /api/appeals/:appealNumber` — Track specific appeal and FAA SLA
+- `GET /api/appeals/parent/:regNumber` — List all appeals for a parent RTI
+
+### 🏛️ Public Authorities (`/api/authorities`)
+- `GET /api/authorities` — List and search ministries/departments
+- `GET /api/authorities/:id` — Get detailed public authority information & PIO contacts
+
+### 🩺 System Health (`/api/health`)
+- `GET /api/health` — Backend server heartbeat status
+
+---
+
+## 📄 License & Compliance
+
+Developed in accordance with the **Right to Information Act, 2005** and guidelines issued by the **Department of Personnel & Training (DoPT)**, Government of India.

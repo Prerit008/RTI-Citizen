@@ -2,6 +2,7 @@ import {
     Accessibility,
     Search,
     Sun,
+    Moon,
     Languages,
 } from "lucide-react";
 import { useAccessibility } from "../../context/AccessibilityContext";
@@ -15,7 +16,7 @@ export default function Header() {
         decreaseFontSize,
         resetFontSize,
         increaseFontSize,
-        toggleHighContrast,
+        toggleDarkMode,
         setIsPanelOpen,
     } = useAccessibility();
 
@@ -31,6 +32,23 @@ export default function Header() {
             >
                 Skip to main content
             </a>
+
+            {/* Competition / Demo Disclaimer Banner */}
+            <div className="bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 text-white text-[11px] sm:text-xs py-1.5 px-4 font-medium shadow-inner">
+                <div className="mx-auto flex max-w-7xl items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                        <span className="rounded bg-black/20 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-100 border border-white/20">
+                            Competition Prototype
+                        </span>
+                        <span className="font-semibold text-white">
+                            ⚠️ DEMONSTRATION PORTAL: This website is a prototype created for competition / hackathon demonstration purposes. It is not an official Government of India portal.
+                        </span>
+                    </div>
+                    <span className="hidden md:inline-block text-[11px] text-amber-100/90 font-mono">
+                        Do not file real-world sensitive legal claims
+                    </span>
+                </div>
+            </div>
 
             {/* Government utility bar */}
             <div className="bg-navy-900 text-white">
@@ -61,15 +79,20 @@ export default function Header() {
                         </button>
 
                         <button
-                            onClick={toggleHighContrast}
-                            className={`flex items-center gap-1 transition hover:text-white/80 ${settings.highContrast ? "text-amber-400 font-bold" : ""
-                                }`}
-                            aria-label="Toggle High Contrast"
-                            title="Toggle High Contrast Mode"
+                            onClick={toggleDarkMode}
+                            className={`flex items-center gap-1.5 font-medium transition hover:text-white/80 rounded px-2 py-0.5 border border-white/20 hover:border-white/40 focus:outline-none focus:ring-1 focus:ring-white/40 ${
+                                settings.darkMode ? "text-amber-300 font-bold bg-white/10" : ""
+                            }`}
+                            aria-label="Toggle Dark Mode"
+                            title={settings.darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
                         >
-                            <Sun size={14} />
+                            {settings.darkMode ? (
+                                <Sun size={14} className="text-amber-300" />
+                            ) : (
+                                <Moon size={14} className="text-slate-300" />
+                            )}
                             <span className="hidden sm:inline">
-                                {settings.highContrast ? "Standard" : "Contrast"}
+                                {settings.darkMode ? "Light Mode" : "Dark Mode"}
                             </span>
                         </button>
 

@@ -4,6 +4,7 @@ const AccessibilityContext = createContext(null);
 
 const DEFAULT_SETTINGS = {
     fontSize: "normal", // 'small' | 'normal' | 'large' | 'xlarge'
+    darkMode: false,
     highContrast: false,
     grayscale: false,
     readableFont: false,
@@ -14,7 +15,15 @@ export function AccessibilityProvider({ children }) {
     const [settings, setSettings] = useState(() => {
         try {
             const saved = localStorage.getItem("rti_accessibility");
-            return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                return {
+                    ...DEFAULT_SETTINGS,
+                    ...parsed,
+                    darkMode: parsed.darkMode !== undefined ? parsed.darkMode : parsed.highContrast || false,
+                };
+            }
+            return DEFAULT_SETTINGS;
         } catch {
             return DEFAULT_SETTINGS;
         }
@@ -39,6 +48,13 @@ export function AccessibilityProvider({ children }) {
             default:
                 root.style.fontSize = "100%";
                 break;
+        }
+
+        // Dark Mode
+        if (settings.darkMode) {
+            root.classList.add("dark");
+        } else {
+            root.classList.remove("dark");
         }
 
         // High Contrast
@@ -98,9 +114,14 @@ export function AccessibilityProvider({ children }) {
         setSettings((prev) => ({ ...prev, fontSize: "normal" }));
     };
 
-    const toggleHighContrast = () => {
-        setSettings((prev) => ({ ...prev, highContrast: !prev.highContrast }));
+    const toggleDarkMode = () => {
+        setSettings((prev) => {
+            const nextMode = !prev.darkMode;
+            return { ...prev, darkMode: nextMode, highContrast: false };
+        });
     };
+
+    const toggleHighContrast = toggleDarkMode;
 
     const toggleGrayscale = () => {
         setSettings((prev) => ({ ...prev, grayscale: !prev.grayscale }));
@@ -126,6 +147,7 @@ export function AccessibilityProvider({ children }) {
                 increaseFontSize,
                 decreaseFontSize,
                 resetFontSize,
+                toggleDarkMode,
                 toggleHighContrast,
                 toggleGrayscale,
                 toggleReadableFont,

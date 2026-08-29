@@ -4,6 +4,7 @@ import {
     RotateCcw,
     Eye,
     Sun,
+    Moon,
     Type,
     Underline,
     Volume2,
@@ -15,7 +16,7 @@ export default function AccessibilityModal() {
     const {
         settings,
         setFontSize,
-        toggleHighContrast,
+        toggleDarkMode,
         toggleGrayscale,
         toggleReadableFont,
         toggleUnderlineLinks,
@@ -94,20 +95,20 @@ export default function AccessibilityModal() {
 
                         <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
 
-                            {/* High Contrast */}
+                            {/* Dark Mode */}
                             <button
-                                onClick={toggleHighContrast}
+                                onClick={toggleDarkMode}
                                 className={`flex items-center justify-between rounded-xl border px-3.5 py-3 transition ${
-                                    settings.highContrast
+                                    settings.darkMode
                                         ? "border-rti-600 bg-rti-50 text-rti-700 font-medium"
                                         : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
                                 }`}
                             >
                                 <div className="flex items-center gap-2.5 text-xs">
-                                    <Sun size={16} />
-                                    <span>High Contrast</span>
+                                    {settings.darkMode ? <Sun size={16} /> : <Moon size={16} />}
+                                    <span>Dark Theme</span>
                                 </div>
-                                {settings.highContrast && <Check size={14} className="text-rti-600" />}
+                                {settings.darkMode && <Check size={14} className="text-rti-600" />}
                             </button>
 
                             {/* Grayscale */}
