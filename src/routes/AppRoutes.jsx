@@ -13,6 +13,7 @@ import PaymentReconciliation from "../pages/PaymentReconciliation";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Dashboard from "../pages/Dashboard";
+import DemoVideo from "../pages/DemoVideo";
 import RTIApplicant from "../pages/RTIApplicant";
 import RTIRequest from "../pages/RTIRequest";
 import RTIReview from "../pages/RTIReview";
@@ -52,6 +53,7 @@ export default function AppRoutes() {
             <Route path="/learn" element={<Learn />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/help" element={<Help />} />
+            <Route path="/demovideo" element={<DemoVideo />} />
 
             {/* Account / Auth */}
             <Route path="/login" element={<Login />} />
