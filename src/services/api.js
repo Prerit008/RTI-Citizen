@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5001/api";
+const API_BASE_URL = process.env.BACKEND_APP_API_URL || "http://localhost:5001/api";
 
 /**
  * Helper to get the saved JWT token from storage
