@@ -1,5 +1,6 @@
-const API_BASE_URL = process.env.BACKEND_APP_API_URL || "http://localhost:5001/api";
-
+// Create React App only exposes REACT_APP_* values to browser code. The start/build
+// launcher maps BACKEND_APP_API_URL to this name so deployments keep one public URL.
+const API_BASE_URL = process.env.REACT_APP_BACKEND_APP_API_URL || "http://localhost:5001/api";
 /**
  * Helper to get the saved JWT token from storage
  */
